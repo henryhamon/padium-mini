@@ -1,10 +1,13 @@
 /// Esp32 version
 
 #include "commons.h"
+#include "display.h"
 
 void setup() {
-  // put your setup code here, to run once:
+  Serial.begin(115200);
+  Serial.println(F("Booting.."));
 
+  displayInit();
 }
 
 void loop() {
