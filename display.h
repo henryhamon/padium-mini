@@ -5,6 +5,7 @@
 #include "Adafruit_GFX.h"
 #include "Adafruit_GC9A01A.h"
 #include "images.h"
+#include "Font4x7Fixed.h"
 
 #define TFT_SCK 22
 #define TFT_MOSI 21 // default ESP32 SDA pin
@@ -39,44 +40,44 @@ void drawCentreString(const String &buf, int x, int y)
     display.print(buf);
 }
 
-void MainTitle(const String &buf)
+void CurrentTrack(const String &track)
 {
-  display.setTextSize(10);
-  drawCentreString(buf, center_x, 30);
+  display.setFont(&Font4x7Fixed); 
+  display.setTextColor(GC9_ORANGE);
+  display.setTextSize(12);
+  drawCentreString(track, center_x, 110);
 }
 
-void SelectionTitle()
+void TrackCarousel(const String &prevTrack, const String &selTrack,const String &nextTrack)
 {
-
+  display.setFont(&Font4x7Fixed); 
+  display.setTextColor(GC9_PURPLE);
+  display.setTextSize(8);
+  drawCentreString(selTrack, center_x, 230);
+  display.setTextSize(4);
+  drawCentreString(prevTrack, 55, 200);
+  drawCentreString(nextTrack, 185, 200);
 }
 
-void SelectedPad()
+void SelectedPatchBank(const String &patch)
 {
-
+  display.setFont(&Font4x7Fixed); 
+  display.setTextColor(GC9A01A_WHITE);
+  display.setTextSize(3);
+  drawCentreString(patch, center_x + 15, 154);
 }
 
 void MainScreen()
 {
+  // Main
   display.fillScreen(GC9_DARKGRAY);
-  display.setTextColor(GC9_ORANGE);
-  display.setTextSize(10);
-  drawCentreString("A#", center_x, 30);
-
+  // Tracks 
   display.fillRect(0, 146, 240, 90, GC9_BEIGE);
+  //Bank Container
   display.fillRoundRect(4, 125, 230, 33, 25, GC9_SAGE);
 
-  display.setTextColor(GC9A01A_WHITE);
-  display.setTextSize(2);
-  drawCentreString("Hillsong Pad", center_x + 15, 134);
-
-  display.setTextColor(GC9_PURPLE);
-  display.setTextSize(7);
-  drawCentreString("A#", center_x, 170);
-
-  display.setTextSize(3);
-  drawCentreString("A", 50, 180);
-  drawCentreString("B", 190, 180);
 }
+
 
 void displayRefresh()
 {
@@ -101,9 +102,12 @@ void displayBoot() {
     delay(500);
     display.fillScreen(GC9A01A_WHITE);
     display.drawBitmap(0,0, epd_padium_logo, 240, 240, GC9A01A_BLUE);   
-    delay(4000);
-    //displayRefresh();
+    delay(4000); // must set to one second and add more 2 sec on setup
     MainScreen();
+
+    SelectedPatchBank("Hillsonguiar");
+    TrackCarousel("G#", "G", "A");
+    CurrentTrack("A#");
 }
 
 void displayInit() {
