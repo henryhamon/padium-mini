@@ -39,24 +39,54 @@ void drawCentreString(const String &buf, int x, int y)
     display.setCursor(x - w / 2, y);
     display.print(buf);
 }
-
-void CurrentTrack(const String &track)
+void CurrentTrackAbstract(const String &track, bool isEraised = false)
 {
   display.setFont(&Font4x7Fixed); 
-  display.setTextColor(GC9_ORANGE);
+  display.setTextColor(isEraised ? GC9_DARKGRAY : GC9_BEIGE);
   display.setTextSize(12);
   drawCentreString(track, center_x, 110);
 }
 
-void TrackCarousel(const String &prevTrack, const String &selTrack,const String &nextTrack)
+void CurrentTrack(const String &track) {
+  CurrentTrackAbstract(track, false);
+}
+
+void clsCurrentTrack(const String &track) {
+  CurrentTrackAbstract(track, true);
+}
+
+void onChangeTrack(int currNote, int selNote) {
+  if (currNote > -1) {
+    clsCurrentTrack(NOTES[currNote]);
+  }
+  CurrentTrack(NOTES[selNote]);
+}
+
+void TrackCarouselAbstract(const String &prevTrack, const String &selTrack,const String &nextTrack, bool isEraised = false)
 {
   display.setFont(&Font4x7Fixed); 
-  display.setTextColor(GC9_PURPLE);
+  display.setTextColor(isEraised ? GC9_BEIGE : GC9_PURPLE);
   display.setTextSize(8);
   drawCentreString(selTrack, center_x, 230);
   display.setTextSize(4);
   drawCentreString(prevTrack, 55, 200);
   drawCentreString(nextTrack, 185, 200);
+}
+
+void TrackCarousel(const String &prevTrack, const String &selTrack,const String &nextTrack)
+{
+  TrackCarouselAbstract(prevTrack, selTrack, nextTrack, false);
+}
+
+
+void clsTrackCarousel(const String &prevTrack, const String &selTrack,const String &nextTrack)
+{
+  TrackCarouselAbstract(prevTrack, selTrack, nextTrack, true);
+}
+
+void onChangeTrackCarousel(int currNote, int selNote) {
+    clsTrackCarousel(NOTES[trackDown(currNote)], NOTES[currNote], NOTES[trackUp(currNote)]);
+    TrackCarousel(NOTES[trackDown(selNote)], NOTES[selNote], NOTES[trackUp(selNote)]);
 }
 
 void SelectedPatchBank(const String &patch)
@@ -99,15 +129,13 @@ void displayBoot() {
     display.fillScreen(GC9A01A_WHITE);
     display.drawBitmap(0,0, epd_logo_hamOn, 240, 240, GC9A01A_BLUE);
     display.setTextSize(5);
-    delay(500);
+    delay(300);
     display.fillScreen(GC9A01A_WHITE);
     display.drawBitmap(0,0, epd_padium_logo, 240, 240, GC9A01A_BLUE);   
-    delay(4000); // must set to one second and add more 2 sec on setup
+    delay(1000); // must set to one second and add more 2 sec on setup
     MainScreen();
 
     SelectedPatchBank("Hillsonguiar");
-    TrackCarousel("G#", "G", "A");
-    CurrentTrack("A#");
 }
 
 void displayInit() {
